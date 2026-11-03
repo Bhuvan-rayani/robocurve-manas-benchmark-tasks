@@ -9,7 +9,7 @@
 
 Use the long pusher to push the spacer out through the covered channel. Put the spacer flat in the green recovery nest, return the pusher flat to its starting outline, then open both grippers and move clear. Keep both parts within the table edges throughout.
 
-The capability is using a rigid tool to transmit force to a separate robot-assembly part through a covered access path, then recovering the part so the next assembly operation can proceed. This is a simplified rigid-body benchmark fixture. It does not model a calibrated jam, press-fit, extraction force, damage, or an industrial service operation. See [NOVELTY.md](NOVELTY.md) for board and benchmark comparisons and the remaining novelty uncertainty.
+Robot assembly sometimes leaves a temporary spacer where a gripper cannot reach it. This task models pushing that spacer out with a tool, then collecting the part and putting the tool away. See [NOVELTY.md](NOVELTY.md) for the board and benchmark comparison.
 
 ## Station, geometry, and reset
 
@@ -35,14 +35,19 @@ The setup uses the official YAM station’s 240 Hz physics and 20 Hz control. Fr
 
 ## Scoring
 
-The score is evaluated from the current state and recorded event history; partial credit is not a best-so-far score.
+Read the final state; earlier partial scores are not kept. Positions below are (x,y,height above tabletop), in mm.
 
-- **0.25:** a qualifying pusher-driven exit event is recorded; the spacer has moved at least 40 mm forward through aligned pusher contact, its complete x-bound is beyond the channel exit at x = 370 mm, and its centre remains within 10 mm of the channel centreline y = 100 mm.
-- **0.50:** the 0.25 outcome has occurred, and the spacer is flat and resting in the recovery nest. Its centre must be within ±8 mm in x/y and ±4 mm in z of (350, 260, 759.5) mm; rotation error is at most 10°; speed is below 15 mm/s and spin below 0.75 rad/s.
-- **1.00:** the spacer remains recovered; the pusher is back within ±12 mm in x/y and ±10 mm in z of its starting centre, with rotation error at most 10°; both grippers are at least 80% open; both TCPs are at least 80 mm from the pusher and spacer bounds; the pusher speed is below 10 mm/s and spin below 0.5 rad/s. These release and stability conditions must hold continuously for one second.
-- **0.00:** no qualifying outcome or a permanent failure. Either required object leaving the table is a permanent failure: every part’s complete bounds must remain inside x = −190 to 910 mm and y = −650 to 650 mm, with its underside no lower than 10 mm below the tabletop (solver tolerance). Directly transferring the spacer without the qualifying pusher event does not score. Breaking a release or stability condition clears the one-second dwell.
+0.25: The pusher has moved the spacer forward by at least 40 mm while touching it. The spacer is fully beyond x=370 mm and its centre is within 10 mm of y=100 mm.
 
-The evaluator estimates contact from pose, orientation, full oriented-box separation tests, transverse bounds overlap, and frame-to-frame motion. It permits up to 2.001 mm oriented-box separation and a rear-face axial gap from −4 to +2.001 mm; tool/spacer long axes must be within 10° of the channel and a long face within 5° of horizontal. Both bodies must stay near table height. Any paired positive forward displacements above a 1-nanometre numerical epsilon accumulate toward the 40 mm stroke, without an imposed push-speed range; backward motion subtracts credit before the exit event. The first full exit must occur in aligned contact after at least 25 mm of verified stroke, otherwise a permanent zero-score failure applies. The reported displacement and contact are a geometric proxy; they are not force measurements. The exact implementation and tolerances are in `src/spacer_extraction/tracker.py` and `src/spacer_extraction/evaluation_io.py`.
+0.50: After that extraction, the spacer rests flat in the green nest. Its centre is within 8 mm in x/y and 4 mm in height of (350,260,12) mm, with orientation error ≤10°, speed <15 mm/s and spin <0.75 rad/s.
+
+1.00: The spacer stays in that position and the pusher is back within 12 mm in x/y and 10 mm in height of its start, with orientation error ≤10°, speed <10 mm/s and spin <0.5 rad/s. Both grippers are at least 80% open and their tool centre points are at least 80 mm from both parts. All these conditions must hold for one continuous second; contact or movement that breaks them restarts the timer.
+
+0: No listed outcome, or either part ever leaves the table bounds: x=-190 to 910 mm, y=-650 to 650 mm, with no underside more than 10 mm below the tabletop (solver allowance). Direct removal does not count. At the spacer's first full exit, it must still touch the pusher after at least 25 mm of measured push; otherwise the trial stays at zero. Count paired forward motion while the parts touch and subtract backward spacer motion. Contact and alignment tolerances are specified in the README.
+
+### Simulator contact checks
+
+The evaluator estimates contact from pose, orientation, full oriented-box separation tests, transverse bounds overlap, and frame-to-frame motion. It permits up to 2.001 mm oriented-box separation and a rear-face axial gap from −4 to +2.001 mm; tool/spacer long axes must be within 10° of the channel and a long face within 5° of horizontal. The spacer centre must be within 4 mm of 12 mm above the table; the pusher centre must be within 5 mm of 8 mm above the table. Their bounds must overlap by more than 8 mm along y and more than 6 mm vertically. Any paired positive forward displacements above a 1-nanometre numerical epsilon accumulate toward the 40 mm stroke, without an imposed push-speed range; backward motion subtracts credit before the exit event. The first full exit must occur in aligned contact after at least 25 mm of verified stroke, otherwise a permanent zero-score failure applies. The reported displacement and contact are a geometric proxy; they are not force measurements. The exact implementation and tolerances are in `src/spacer_extraction/tracker.py` and `src/spacer_extraction/evaluation_io.py`.
 
 ### Physical inspection procedure
 
