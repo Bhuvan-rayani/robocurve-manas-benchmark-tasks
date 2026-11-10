@@ -1,0 +1,20 @@
+{
+  "title": "Press three safety caps into the sockets of a wall plate",
+  "category": "Societal relevance",
+  "instruction": "Press a red safety cap into each of the three empty sockets of the cream wall plate.",
+  "setup": "Positions in cm from the midpoint between the two arm bases, on the table (x forward, y left); table top z = 0.7475 m. Everything is a rigid matte primitive with friction 1.2 static and 1.0 dynamic unless stated. Wall plate: cream PLA block 12 x 26 x 2 cm (x, y, z) centred at x 30, y 0, 25 kg in the sim (it stands in for a plate screwed to a wall box), with 1.8 cm tall raised walls that form three square sockets 5.4 x 5.4 cm and 1.8 cm deep at x 30 and y +7, 0, -7 (7 cm pitch, 1.6 cm walls between them). The 3.3 cm end pads at both ends of the plate are slightly darker: they are the places to hold it. Caps: three red PLA cylinders, 4 cm in diameter and 3 cm tall, 20 g each, standing on the table in a row at x 15 and y +12 (cap A), 0 (cap B), -12 (cap C). A cap dropped into a socket sits 2 mm above the socket floor with its top 1.2 cm above the plate face. To build it: print the plate and the caps, and screw the plate down; the 7 mm of clearance per side is wider than a real friction fit because the open-loop arm wobbles by about 6 mm.",
+  "scoring": "Measured at the end with a ruler and a top photo. A cap counts as seated when its centre is within 20 mm of a socket centre and it sits in the socket (top 4 to 20 mm above the plate face). 0 if the plate ends more than 6 cm from its start or anything falls off the table. Otherwise: 1.0 if all three sockets hold a seated cap, the plate moved less than 15 mm from its start, and everything is still for 1 s; 0.75 if all three are seated but the plate moved 15 mm or more; 0.5 if two are seated; 0.25 if one is seated; else 0. Possible scores: 0, 0.25, 0.5, 0.75, 1.0. In the sim the scorer reads part poses, not the grippers.",
+  "run_limit": "2,400 steps (2 minutes at 20 Hz)",
+  "fidelity": "Approximate. The plate is a 25 kg compound body, so it never slides and holding it is demonstrated, not enforced. The sockets are open square wells with 7 mm of clearance per side, not a friction fit, and the caps are not pressed or snapped in: they are dropped about 2 cm into the well and stay by gravity. The caps are plain cylinders without an entry chamfer. No contact force cap.",
+  "context": "Electricians and home-safety technicians fit childproof safety caps into wall sockets and fix the cover plate against shock hazards (O*NET 47-2111.00, 49-9071.00).",
+  "keywords": [
+    "bimanual",
+    "safety caps",
+    "insertion",
+    "wall plate",
+    "electrical safety"
+  ],
+  "reset_notes": "Put the plate back at x 30, y 0 and the three caps at x 15, y +12, 0, -12. Nothing is consumed. Run with -E object_jitter=0: the open-loop demo depends on the exact layout.",
+  "scores": "Dream-1 run: 0.0; demo: 1.0",
+  "media": "M-T8VXHR"
+}
