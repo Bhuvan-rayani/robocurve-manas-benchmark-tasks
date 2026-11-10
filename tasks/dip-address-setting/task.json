@@ -1,0 +1,19 @@
+{
+  "title": "Set four address switches to a dot pattern and press commit",
+  "category": "Impact on AI timelines",
+  "instruction": "Set the four blue switches on the violet module to match the dark and light squares on the white card (dark = pushed to the far end, light = pushed to the near end), then press the lime button.",
+  "setup": "Positions in cm from the midpoint between the two arm bases, on the table (x forward, y left); table top z = 0.7475 m. Everything is a rigid matte primitive with friction 1.2 static and 1.0 dynamic unless stated. Module: violet PLA block 14 x 26 x 3 cm (x, y, z), centred at x 30, y 0, 25 kg in the sim (it stands in for a module screwed to the bench). Four blue sliding switches (1.2 x 1.6 x 1.4 cm, 4 g, 1.5 cm of travel along x, 5 cm apart) sit in a row at x 33.5, y +7.5, +2.5, -2.5, -7.5; each stays where it is pushed (viscous 20 N s/m, no return spring). At the start switches 1 and 4 (y +7.5 and -7.5) are at the near end and switches 2 and 3 are at the far end. A lime push button (3.6 cm diameter, 1.2 cm tall, 8 g) sits at x 25.3, y 0 with 0.8 cm of travel and a 100 N/m return spring. Card: white 6 x 22 x 0.24 cm at x 22, y +26, with four 2.4 cm squares at y +7.5, +2.5, -2.5, -7.5 relative to its centre: dark, light, light, dark. A dark square means the switch at that position must end at its far end (+x); a light square means the near end. The target is therefore far, near, near, far. To build it: print the parts, run each switch in a slot with a damper or grease so it stays put, add a spring under the button, and bolt the module down.",
+  "scoring": "Measured at the end with a ruler and a photo. A switch counts as set when its knob has moved at least 10 mm from the start towards the position the card asks for. 0 if the module ends more than 5 cm from its start, or if the lime button is pressed in (6.4 mm or more) while fewer than four switches are set correctly, or if the module ends more than 15 mm from its start. Otherwise: 1.0 if all four switches are set correctly, the button is pressed in at least 6.4 mm, and everything is still for 1 s; 0.75 if all four switches are set correctly; 0.5 if two or three are correct; 0.25 if exactly one is correct; else 0. Possible scores: 0, 0.25, 0.5, 0.75, 1.0. In the sim the scorer reads the module pose and the switch and button joints, not the grippers.",
+  "run_limit": "2,400 steps (2 minutes at 20 Hz)",
+  "fidelity": "Approximate. The switches are damped prismatic joints with no return spring and no detent; they stay where pushed only because of the viscous damping. The module is a 25 kg body that stands in for a bolted module, so it does not slide and the hold is not enforced. The card shows the pattern as dark and light squares, not printed dots. The switches are 1.6 cm wide and stand 1.4 cm proud, larger than real DIP switches, so a closed finger can push them. No contact force cap.",
+  "context": "Technicians configure physical DIP address switches on modular edge devices and press commit before deployment into server racks (O*NET 17-3023.00, 49-2094.00).",
+  "keywords": [
+    "bimanual",
+    "switches",
+    "reading a pattern",
+    "commissioning"
+  ],
+  "reset_notes": "Put switches 1 and 4 at their near ends and 2 and 3 at their far ends, release the button, put the module back on its outline at x 30, y 0 and the card at x 22, y +26. Nothing is consumed. Run with -E object_jitter=0: the open-loop demo depends on the exact layout.",
+  "scores": "Dream-1 run: 0.0; demo: 1.0",
+  "media": "M-GFJ5HT"
+}
