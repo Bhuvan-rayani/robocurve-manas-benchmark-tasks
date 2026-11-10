@@ -1,0 +1,20 @@
+{
+  "title": "Carry a long pipe with both hands and lay it in two V stands",
+  "category": "Impact on jobs",
+  "instruction": "Carry the green pipe with both hands and lay it in both wooden V stands.",
+  "setup": "Positions in cm from the midpoint between the two arm bases, on the table (x forward, y left); table top z = 0.7475 m. Everything is a rigid matte primitive with friction 1.2 static and 1.0 dynamic. Pipe: green cylinder 6 cm in diameter and 60 cm long (axis along y), 1 kg, lying on a grey pad 8 x 50 x 2 cm (25 kg) at x 18, y 0. Two wooden V stands (each 10 x 6 x 12 cm, 25 kg in the sim, standing in for bolted stands) at x 34 and y +21 and y -21, 42 cm apart, each with a 90-degree V notch whose vertex is 8 cm above the table. The hands hold the pipe 22 cm either side of its middle with the grippers turned 90 degrees so the fingers close across the pipe, lift it about 12 cm, carry it 15 cm forward and lower it into the notches. To build it: bolt two V blocks to the bench and rest a pipe on them.",
+  "scoring": "Measured at the end with a ruler and a photo. 0 if either stand moved more than 5 mm or the pipe fell off the table. Otherwise: 1.0 if the pipe lies in both V notches (its middle within 10 mm of x 34, within 3 cm of y 0, within 12 mm of the seated height, its axis within 5 degrees of the line between the stands) and everything is still for 1 s; 0.75 if it lies in at least one notch; 0.5 if it is held over the stands (within 4 cm of x 34, clear of them); 0.25 if it is lifted more than 5 cm; else 0. Possible scores: 0, 0.25, 0.5, 0.75, 1.0. In the sim the scorer reads part poses, not the grippers.",
+  "run_limit": "2,400 steps (2 minutes at 20 Hz)",
+  "fidelity": "Approximate. The pipe is a rigid cylinder with friction 1.2 and the stands are 25 kg bodies. The V notches are built from boxes (two 45-degree-looking steps, not a true V), so the pipe rests on box edges. The hands are 44 cm apart. No contact force cap.",
+  "context": "Industrial pipe fitters and construction riggers carry and cradle long conduit, piping, and structural tubes across dual work supports during plant assembly (O*NET 47-2152.00, 47-2152.02).",
+  "keywords": [
+    "bimanual",
+    "pipe carrying",
+    "cooperative transport",
+    "v stands",
+    "material handling"
+  ],
+  "reset_notes": "Put the pipe back on the pad at x 18, y 0 and keep the stands at x 34, y +21 and -21. Nothing is consumed. Run with -E object_jitter=0: the open-loop demo depends on the exact layout.",
+  "scores": "Dream-1 run: 0.0; demo: 1.0",
+  "media": "M-R4VHGR"
+}
