@@ -1,0 +1,20 @@
+{
+  "title": "Slide a server chassis into rack rails until its ears are flush",
+  "category": "Impact on AI timelines",
+  "instruction": "Slide the silver server chassis into the rack rails until its front ears are flush with the teal posts.",
+  "setup": "Positions in cm from the midpoint between the two arm bases, on the table (x forward, y left); table top z = 0.7475 m. Everything is a rigid matte primitive with friction 1.2 static and 1.0 dynamic unless stated. Staging plate: grey 27 x 12 x 6 cm block centred at x 28.5, y 0, fixed. Chassis: silver aluminium box 24 x 23 x 4.4 cm (x, y, z), 700 g, friction 0.3, centred at x 29, y 0 on the plate (its top face is level with the rail ledges), with two 0.4 x 5 x 4.4 cm ear tabs on its front (-x) face at y +16 and -16. Rails: two steel guide rails 24 cm long (x 42 to 66), one at each side: a 1.2 x 1.5 cm wall at y +13.3 and -13.3 and a 3.2 x 0.2 cm support ledge at y +12.3 and -12.3, ledge top 6 cm above the table; the clear width between the walls is 25.4 cm, 1.2 cm per side wider than the chassis. Posts: two teal PLA posts 3 x 3 x 20 cm fixed at x 40.5 and y +19.5 and -19.5, their front faces at x 39.0 (the ears stop on them). Both arms push the chassis's front face at y +9.5 and -9.5 (19 cm apart), because the arms collide when the hands are closer. To build it: print the parts, bolt the posts, plate and rails to the bench, and wax the ledges.",
+  "scoring": "Measured at the end with a ruler and a side photo. Gates (score 0): either post moved more than 5 mm, the chassis is tilted more than 15 degrees, it fell below the table, or it ended more than 5 cm to the side. Otherwise: 1.0 if the front ears are within 3 mm of the post faces, the chassis is tilted under 5 degrees, and everything is still for 1 s; 0.75 if the rear end is at least 15 cm into the rails; 0.5 if at least 6 cm into the rails; 0.25 if lifted more than 2 cm or advanced at least 2 cm; else 0. Possible scores: 0, 0.25, 0.5, 0.75, 1.0. In the sim the scorer reads part poses, not the grippers.",
+  "run_limit": "2,400 steps (2 minutes at 20 Hz)",
+  "fidelity": "Approximate. The chassis is a loose compound body with friction 0.3 sliding on a fixed plate and ledges, with 1.2 cm of clearance per side in the rails (wider than a real rack). There are no latches, springs or detents, and the posts, plate and rails are fixed bodies. The two-handed push keeps the chassis square; one hand alone pushes it off-centre. No contact force cap.",
+  "context": "Datacenter technicians and hardware specialists slide heavy server chassis into equipment racks on rails (O*NET 49-2011.00, 15-1231.00).",
+  "keywords": [
+    "bimanual",
+    "carry",
+    "insertion",
+    "rack",
+    "datacenter"
+  ],
+  "reset_notes": "Put the chassis back on the plate at x 29, y 0 with its rear end 1 cm before the rail start. Nothing is consumed. Run with -E object_jitter=0: the open-loop demo depends on the exact layout.",
+  "scores": "Dream-1 run: 0.0; demo: 1.0",
+  "media": "M-EJD5EX"
+}
