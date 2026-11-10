@@ -1,0 +1,21 @@
+{
+  "title": "Set a linear axis to its datum and pin it",
+  "category": "Impact on AI timelines",
+  "keywords": [
+    "bimanual",
+    "linear axis",
+    "datum",
+    "commissioning",
+    "peg in hole",
+    "robot cell setup"
+  ],
+  "instruction": "Slide the carriage until its white mark is level with the white mark on the base, then drop the yellow pin into the hole in the carriage's lug while holding the base still.",
+  "context": "Before a robot cell is commissioned, technicians set the home datum of each linear axis and lock the carriage with a pin. The base of a bench axis can shift when the carriage is pushed, so one hand holds it while the other pushes and then places the pin (O*NET 49-9041.00, 17-3024.00).",
+  "setup": "Positions in cm from the midpoint between the two arm bases, on the table (x forward, y left); table top z = 0.7475 m. Everything is a rigid matte primitive with friction 1.2 static and 1.0 dynamic unless stated. Axis base: grey PLA block 8 x 32 x 4 cm (x, y, z), 600 g, centred at x 26, y 0, long side along y, lying on a PTFE film (friction 0.02 in the sim). A darker 7 x 6 cm patch on its top at y +13 marks where to hold it, and a white strip (1 x 0.6 x 0.2 cm) lies on its top at x 23, y -6. Carriage: silver (sRGB 0.67, 0.70, 0.74) body 8 x 6 x 3 cm on top of the base, centred at y -10 at the start, free to slide along y over 12 cm; it has no return spring and stays where it is pushed (150 N s/m viscous resistance in the sim). A 2 x 5 x 2.5 cm bridge joins it to a square lug 5.4 x 5.4 x 2.5 cm beyond the base's -x edge (lug centre x 17.5, underside 4 cm above the table) with a 3 x 3 cm square through-hole, centred at y -10 at the start. A second white strip (1 x 0.6 x 0.2 cm) lies on the carriage top at x 23, y -10: after a 4 cm push along +y it is level with the strip on the base and the hole is centred on y -6. Pin: yellow PLA cylinder 1.6 cm in diameter and 6 cm long, 30 g, standing on the table at x 20, y +20. To build it: print the parts, put PTFE tape under the base, and run the carriage on two steel rods with a damper or grease so it stays put when released.",
+  "scoring": "Measured at the end with a ruler and a top and a side photo. Offset = distance along y between the two white strips (40 mm at the start). 0 if the base ends more than 5 cm from its start, tilted more than 20 degrees, or off the table. Otherwise: 1.0 if the offset is at most 3 mm, the pin stands in the lug hole (its axis within 9 mm of the hole centre, its lower end at least 5 mm below the lug underside, tilted at most 15 degrees), the base moved less than 8 mm from its start, and everything is still (under 10 mm/s) for 1 s; 0.75 if the offset is at most 3 mm; 0.5 if the offset is at most 6 mm; 0.25 if the carriage was pushed at least 2 cm toward the datum without passing it by more than 4 cm; else 0. Possible scores: 0, 0.25, 0.5, 0.75, 1.0. In the sim the scorer reads part poses and the carriage joint, not the grippers.",
+  "run_limit": "2,400 steps (2 minutes at 20 Hz)",
+  "reset_notes": "Put the base back on its outline with the carriage at its -y end (strips 40 mm apart) and stand the pin at x 20, y +20. Nothing is consumed. Run with -E object_jitter=0: the open-loop demo depends on the exact layout.",
+  "fidelity": "Approximate. The carriage is a damped prismatic joint with no return spring; the base is a loose body on a very low friction film and, in the sim ablation, did not slide when left unheld, so the hold is demonstrated but not enforced (the score still requires the base to end within 8 mm of its start). The pin is a loose cylinder with no detent. The hole clearance (7 mm per side) is wider than a real fit because the open-loop arm wobbles by about 6 mm. No contact force cap.",
+  "scores": "Dream-1 run: 0.0; demo: 1.0",
+  "media": "M-RQTHSU"
+}
