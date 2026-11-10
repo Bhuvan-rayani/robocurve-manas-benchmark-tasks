@@ -1,0 +1,20 @@
+{
+  "title": "Pick the brown-black-red resistor and seat it in a spring-covered socket",
+  "category": "Impact on jobs",
+  "instruction": "Pick the resistor with brown, black and red bands from the tray and drop it into the socket while the other hand holds the sliding cover aside.",
+  "setup": "Positions in cm from the midpoint between the two arm bases, on the table (x forward, y left); table top z = 0.7475 m. Everything is a rigid matte primitive with friction 1.2 static and 1.0 dynamic unless stated. Tray: white PLA 20 x 30 x 3 cm (x, y, z) centred at x 24, y +18, 400 g, with six upright pockets in two rows. Resistors: six beige cylinders 3 cm in diameter and 7 cm tall, 25 g, each with three painted bands (top to bottom) at x 29 and 19, y +28, +18, +8: orange-orange-brown, green-brown-red, brown-black-red (the target, at x 29, y +8), black-brown-red, yellow-violet-red, red-black-brown. Socket board: green PLA block 24 x 16 cm, 3 cm thick with an 8 cm tall collar around a 4.6 x 4.6 cm square hole, centred at x 26, y -6, 25 kg in the sim (it stands in for a board bolted down); the hole goes down to the table, leaving 8 mm of clearance per side around a resistor. Cover: grey bar 10 x 20 x 1 cm, 20 g, lying over the hole at 8-9 cm above the table; it slides 4 cm along +x to uncover the hole and a 10 N/m spring and 10 N s/m damping pull it shut again, so it has to be held open while the resistor is dropped in. Reference card: white 6 x 8 x 0.25 cm at x 18, y -20. To build it: print the parts, paint three bands on each resistor, and bolt the board down.",
+  "scoring": "Measured at the end with a ruler and a top photo. 0 if the board moved more than 5 mm or any resistor other than the brown-black-red one is in the socket. Otherwise: 1.0 if the brown-black-red resistor stands in the socket (its centre within 12 mm of the hole centre, its base at least 6 cm below the collar top, its top below the collar), the cover is back within 3 mm of its closed position, and everything is still for 1 s; 0.75 if the target resistor is held over the socket within 12 mm and lifted; 0.5 if the target is lifted more than 2 cm; 0.25 if any resistor is lifted more than 2 cm; else 0. Possible scores: 0, 0.25, 0.5, 0.75, 1.0. In the sim the scorer reads part poses and the cover joint, not the grippers.",
+  "run_limit": "2,400 steps (2 minutes at 20 Hz)",
+  "fidelity": "Approximate. The resistors are rigid cylinders with painted bands, not components with leads; the socket is a square well with 8 mm of clearance per side, not a spring contact, and the resistor stays only by gravity. The cover is a spring-loaded slide (10 N/m) that the second arm holds open; the board is a 25 kg body, so holding it still is not needed. No contact force cap.",
+  "context": "Electrical and electronic equipment assemblers read 3-band resistor colour codes to identify, select, and install components into spring-retained sockets and test fixtures (O*NET 51-2028.00).",
+  "keywords": [
+    "bimanual",
+    "colour code",
+    "electronics assembly",
+    "insertion",
+    "spring slider"
+  ],
+  "reset_notes": "Stand the six resistors back in their pockets, close the cover, and put the board at x 26, y -6 and the tray at x 24, y +18. Nothing is consumed. Run with -E object_jitter=0: the open-loop demo depends on the exact layout.",
+  "scores": "Dream-1 run: 0.0; demo: 1.0",
+  "media": "M-ZBFHBJ"
+}
