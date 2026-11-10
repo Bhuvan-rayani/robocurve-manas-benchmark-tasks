@@ -1,0 +1,20 @@
+{
+  "title": "Carry a long bar to two posts and rest it in their cradles",
+  "category": "Safety and alignment",
+  "instruction": "Carry the white bar with both hands and rest it on the tops of the two yellow posts.",
+  "setup": "Positions in cm from the midpoint between the two arm bases, on the table (x forward, y left); table top z = 0.7475 m. Everything is a rigid matte primitive with friction 1.2 static and 1.0 dynamic. Bar: white box 3.1 x 46 x 3.1 cm (x, y, z), 300 g, lying along y on a grey pad 6 x 50 x 1 cm (25 kg) at x 18, y 0. Posts: two yellow posts at x 28, y +20 and y -20, each a 12 x 12 x 2 cm base plate (25 kg in the sim, standing in for a bolted post), a 4 x 4 cm column 10.5 cm tall, and a 5.6 x 4 x 1 cm cradle plate on top; the cradle tops are 11.5 cm above the table and 40 cm apart. The hands hold the bar 12 cm either side of its middle (24 cm apart) with the grippers turned 90 degrees so the fingers close across the bar, lift it about 12 cm, carry it 10 cm forward and lower it onto the cradles. To build it: bolt two short posts to the bench with a flat top and rest a bar across them.",
+  "scoring": "Measured at the end with a ruler and a photo. 0 if either post moved more than 5 mm or the bar fell below the table. Otherwise: 1.0 if the bar's middle is within 15 mm of the point midway between the posts in x, y and height (its ends on both cradles) and everything is still for 1 s; 0.75 if within 30 mm of that point; 0.5 if one end is on a cradle; 0.25 if the bar is lifted more than 4 cm off the pad; else 0. Possible scores: 0, 0.25, 0.5, 0.75, 1.0. In the sim the scorer reads part poses, not the grippers.",
+  "run_limit": "2,400 steps (2 minutes at 20 Hz)",
+  "fidelity": "Approximate. The bar is a loose rigid box and the cradles are flat plates, with no notch to hold it: it stays on them by gravity and friction. The posts are 25 kg bodies. The hands are 24 cm apart because the arms collide when closer. No contact force cap.",
+  "context": "Facility safety officers and maintenance workers deploy perimeter walkway barriers and cordon bars to restrict pedestrian access (O*NET 47-4051.00).",
+  "keywords": [
+    "bimanual",
+    "cordon bar",
+    "walkway barrier",
+    "dual carry",
+    "cradle placement"
+  ],
+  "reset_notes": "Put the bar back on the pad at x 18, y 0 and keep the posts at x 28, y +20 and -20. Nothing is consumed. Run with -E object_jitter=0: the open-loop demo depends on the exact layout.",
+  "scores": "Dream-1 run: 0.0; demo: 1.0",
+  "media": "M-S2LJHJ"
+}
