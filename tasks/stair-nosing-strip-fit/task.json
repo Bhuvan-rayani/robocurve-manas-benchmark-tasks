@@ -1,0 +1,20 @@
+{
+  "title": "Fit stair nosing anti-slip strip",
+  "category": "Societal relevance",
+  "instruction": "Fit the yellow L-shaped anti-slip strip onto the front edge of the grey step.",
+  "setup": "Positions in cm from the midpoint between the two arm bases, on the table (x forward, y left); table top z = 0.7475 m. Everything is a rigid matte primitive with friction 1.2 static and 1.0 dynamic. Step: grey block 14 x 40 x 6 cm (x, y, z), centred at x 36, y 0, 25 kg in the sim (it stands in for a fixed stair); its top is 6 cm above the table and its front face is at x 29. Staging pad: 6 x 44 x 1 cm at x 18, y 0, 25 kg. Nosing strip: yellow L-profile 4 x 38 x 4 cm, 150 g, an upright 1.5 cm lip along the front with a 4 cm wide, 1.5 cm thick flange on top, lying on the pad at x 18, y 0 with its lip toward the arms. The two hands hold the strip near its ends at y +16 and y -16 (32 cm apart), turned 90 degrees so the fingers close across the strip, and lower it so the lip hangs over the step's front face and the flange lies on the tread.",
+  "scoring": "Ladder: 0.25 strip lifted off pad by at least 30 mm, 0.50 strip brought over step front edge, 0.75 front lip engaged over front face with flange near tread level, 1.00 strip fully seated flush on tread within 2.5 mm and lip contacting front face within 3 mm for 1.0 s. Gate: step or pad drift over 5 mm zeroes score. Gate: strip dropped below table or overturned zeroes score. Possible scores: 0.0, 0.25, 0.5, 0.75, 1.0.",
+  "run_limit": "2,400 steps (2 minutes at 20 Hz)",
+  "fidelity": "Concrete step and staging pad are fixed 25 kg reaction bodies with 1.2 friction. Yellow nosing strip is a lightweight rigid extrusion with true L-section compound collision geometry. Scorer evaluates physical contact depth, lip overlap, and lateral symmetry.",
+  "context": "Architectural safety fitting, public infrastructure maintenance, and anti-slip stair tread installation (O*NET 47-2141.00, 47-2061.00).",
+  "keywords": [
+    "stair nosing",
+    "anti-slip strip",
+    "bimanual",
+    "dual carry",
+    "infrastructure maintenance"
+  ],
+  "reset_notes": "Return yellow nosing strip to staging pad at x=18 cm with lip facing down. Verify step base remains firmly fixed at x=36 cm.",
+  "scores": "Dream-1 run: 0.0; demo: 1.0",
+  "media": "M-ZL92VX"
+}
