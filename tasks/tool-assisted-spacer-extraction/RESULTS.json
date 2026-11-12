@@ -11,7 +11,7 @@
     "isaaclab-arena": "0.3.0",
     "robocurve-spacer-extraction": "0.1.0"
   },
-  "instruction": "Use the long pusher to push the spacer out through the covered channel. Put the spacer flat in the green recovery nest, return the pusher flat to its starting outline, then open both grippers and move clear. Keep both parts within the table edges throughout.",
+  "instruction": "Recover the spacer from the covered channel and lay it flat in the green recovery nest. Leave the long pusher flat on its starting outline, then open both grippers and move clear. Keep both parts within the table edges throughout.",
   "trials": [
     {
       "trial": "release-demo1",

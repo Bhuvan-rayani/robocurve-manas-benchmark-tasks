@@ -7,7 +7,7 @@
 
 ## Task
 
-Use the long pusher to push the spacer out through the covered channel. Put the spacer flat in the green recovery nest, return the pusher flat to its starting outline, then open both grippers and move clear. Keep both parts within the table edges throughout.
+Recover the spacer from the covered channel and lay it flat in the green recovery nest. Leave the long pusher flat on its starting outline, then open both grippers and move clear. Keep both parts within the table edges throughout.
 
 Robot assembly sometimes leaves a temporary spacer where a gripper cannot reach it. This task models pushing that spacer out with a tool, then collecting the part and putting the tool away. See [NOVELTY.md](NOVELTY.md) for the board and benchmark comparison.
 
@@ -70,7 +70,7 @@ Run the scripted demonstration:
 inspect-robots run --embodiment spacer_extraction_yam --policy spacer_extraction_demo \
   -E trace_path=/tmp/spacer-demo.jsonl -E control_hz=20 -E object_jitter=0 \
   -E cam_width=320 -E cam_height=176 \
-  --instruction "Use the long pusher to push the spacer out through the covered channel. Put the spacer flat in the green recovery nest, return the pusher flat to its starting outline, then open both grippers and move clear. Keep both parts within the table edges throughout." \
+  --instruction "Recover the spacer from the covered channel and lay it flat in the green recovery nest. Leave the long pusher flat on its starting outline, then open both grippers and move clear. Keep both parts within the table edges throughout." \
   --scorer task_score --max-steps 2400 --store-frames --log-dir /tmp/spacer-demo
 ```
 

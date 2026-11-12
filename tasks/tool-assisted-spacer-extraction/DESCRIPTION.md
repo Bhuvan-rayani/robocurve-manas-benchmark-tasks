@@ -4,7 +4,7 @@ Category: Impact on AI timelines
 
 ## Instruction
 
-Use the long pusher to push the spacer out through the covered channel. Put the spacer flat in the green recovery nest, return the pusher flat to its starting outline, then open both grippers and move clear. Keep both parts within the table edges throughout.
+Recover the spacer from the covered channel and lay it flat in the green recovery nest. Leave the long pusher flat on its starting outline, then open both grippers and move clear. Keep both parts within the table edges throughout.
 
 ## Context
 
