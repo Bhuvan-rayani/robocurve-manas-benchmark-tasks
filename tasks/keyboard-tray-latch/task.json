@@ -1,0 +1,20 @@
+{
+  "title": "Slide keyboard tray under desk until purple latch engages",
+  "category": "Impact on jobs",
+  "instruction": "Stow the grey keyboard tray under the desk and secure it.",
+  "setup": "Dual YAM embodiment at ready on station tabletop (z=747.5 mm). A beige desk fixture (200x360x60 mm: a 20 mm top plate and two 20 mm wide, 40 mm high side rails, 25 kg, friction 1.2, fixed in place) stands at x=30 cm, y=0. A grey keyboard tray (200x300x20 mm) with a 40x70x20 mm side lug and a 40x40x40 mm pull block on its -y edge rests under it with its centre at x=16 cm, y=0 and slides 280 mm along +x to a stop; it stays where it is left (spring 0.001 N/m, damping 20 N s/m). A purple latch block (20x20x20 mm) sits at x=44 cm, y=0, 30 mm above the tabletop on an 8 mm vertical slider (spring 100 N/m, damping 10 N s/m) that the tray presses down as it arrives. Real build: the desk is 18 mm plywood on a steel frame bolted to the table; the tray is a 3D-printed PLA plate on two ball-bearing drawer slides; the latch is a printed PLA block on a compression spring. Material as modelled: every object is a rigid body with only the size, mass and friction stated here; nothing deforms, and nothing snaps or latches except through contact and the listed slider springs.",
+  "scoring": "Gate: 0 if the desk moves more than 5 mm. Ladder by how far the tray has slid in: 0.25 at 5 cm or more, 0.50 at 15 cm or more, 0.75 at 26 cm or more, 1.00 at 27.8 cm or more (the tray stops at 28 cm) with the latch counted as engaged and everything still for 1.0 s. The latch counts as engaged when its slider is pressed down at least 6 mm or the tray has slid at least 27.8 cm. Possible scores: 0.0, 0.25, 0.5, 0.75, 1.0.",
+  "run_limit": "2,400 steps (120 seconds at 20 Hz)",
+  "fidelity": "The tray and the latch are rigid prismatic sliders: the tray stays where it is left (almost no spring, damped) and the latch is a spring-loaded block. Nothing holds the tray in place once it is at the stop, so the latch is detected by position, not by a mechanical catch. Contact and friction come from the simulator; the scorer reads the slider travels and the desk position.",
+  "context": "Office ergonomics technicians and facilities installers assemble and adjust under-desk articulated keyboard mechanisms and slides (O*NET 49-9071.00).",
+  "keywords": [
+    "bimanual",
+    "keyboard tray",
+    "under-desk slide",
+    "latch engagement",
+    "office ergonomics"
+  ],
+  "reset_notes": "Pull the tray back out to its starting position (centre at x=16 cm), let the latch block spring back up, and allow 0.5 s to settle.",
+  "scores": "Dream-1 run: 0.0; demo: 1.0",
+  "media": "M-EVAD6B"
+}
