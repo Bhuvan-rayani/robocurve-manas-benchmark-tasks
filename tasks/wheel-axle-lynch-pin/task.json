@@ -1,0 +1,20 @@
+{
+  "title": "Install wheel on axle and lock with lynch pin",
+  "category": "Impact on jobs",
+  "instruction": "Mount the black wheel on the silver axle and secure it with the pink lynch pin.",
+  "setup": "Dual YAM embodiment at ready on station tabletop. Fixed heavy axle stand (25 kg, friction 1.2) with horizontal axle at x=30 cm. Black wheel (120 mm dia x 30 mm, 0.4 kg) and pink pin (8 mm dia x 60 mm) on staging pads. Material as modelled: every object is a rigid body with only the size, mass and friction stated here; nothing deforms, and nothing locks or latches except through contact and the listed slider springs.",
+  "scoring": "Ladder: 0.25 wheel lifted, 0.50 wheel on axle >= 2 cm, 0.75 wheel fully against stop, 1.00 pin inserted through cross hole and motionless for 1.0 s. Gate: stand drift > 5 mm zeroes score. Possible scores: 0.0, 0.25, 0.5, 0.75, 1.0.",
+  "run_limit": "2,400 steps (120 seconds at 20 Hz)",
+  "fidelity": "Fixed heavy 25 kg stand with horizontal cylindrical axle. Wheel and pin are rigid bodies with realistic friction. Scorer evaluates physical sliding depth and pin-hole concentricity.",
+  "context": "Agricultural machinery and heavy equipment mechanics install ground-drive wheels and retaining linchpins during implement assembly (O*NET 49-3041.00).",
+  "keywords": [
+    "bimanual",
+    "wheel assembly",
+    "lynch pin",
+    "axle",
+    "pin retention"
+  ],
+  "reset_notes": "Return wheel and pin to staging pads. Verify stand is fixed at x=30 cm.",
+  "scores": "Dream-1 run: 0.0; demo: 1.0",
+  "media": "M-CE49BK"
+}
