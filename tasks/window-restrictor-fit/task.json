@@ -1,0 +1,19 @@
+{
+  "title": "Fit cyan stop block into window track for 100 mm sash restriction",
+  "category": "Societal relevance",
+  "instruction": "Fit the cyan stop block so the window sash cannot open more than 100 mm, and open the sash as far as it will go.",
+  "setup": "Dual YAM embodiment at ready on station tabletop (z=747.5 mm). A brown PLA window frame (250x380x30 mm, 25 kg stands in for a bolted frame, friction 1.2) sits at (30, 0) cm with a 340 mm track channel along y. A white PLA sash pane (220x140x20 mm, 150 g, 120 mm travel along +y) starts closed at (30, -10) cm; it stays where it is pushed (spring 0.001 N/m, damping 50 N s/m) and has a 45 mm proud rear push tab. Three 30x30 mm floor pockets at y = 28, 78 and 128 mm (stopping the sash at 50, 100 and 150 mm). A cyan PLA stop block (30x30x30 mm body on a 16 mm round, 6 mm long peg, 20 g, friction 1.2; 7 mm peg clearance per side in a pocket) rests on a grey 60x60x5 mm datum pad at (14, +20) cm. Material as modelled: every object is a rigid body with only the size, mass and friction stated here; nothing deforms, and nothing snaps or latches except through contact and the listed slider springs.",
+  "scoring": "Gates: 0 if the frame drifts > 5 mm or the block falls below the table. Ladder: 0.25 block lifted off the pad (>= 8 mm or >= 20 mm away); 0.50 block seated in any pocket (x within 10 mm, y within 10 mm of the pocket centre, body bottom within 2 mm of the floor); 0.75 sash pushed open (>= 20 mm, < 119 mm) and stopped by the seated block (front face within 6 mm); 1.00 block in the 100 mm pocket, sash opening 95-105 mm, held still for 1.0 s. Possible scores: 0.0, 0.25, 0.5, 0.75, 1.0.",
+  "run_limit": "2,400 steps (120 seconds at 20 Hz)",
+  "fidelity": "Compound window frame (14 collision boxes with three floor pockets) with a damped prismatic sash slider (120 mm travel). The block seats by gravity into a pocket with 7 mm peg clearance per side; the sash then pushes it against the pocket's +y wall, which fixes the opening. No detent or latch is modelled.",
+  "context": "Window restrictors are critical safety devices preventing accidental falls in high-rise residential and institutional buildings, requiring bimanual coordination to hold spring-loaded sashes and lock restrictors into exact legal limit positions (O*NET 47-2061.00).",
+  "keywords": [
+    "bimanual",
+    "press-fit",
+    "child safety",
+    "window restrictor"
+  ],
+  "reset_notes": "Lift the stop block out of the pocket and replace it on the datum pad at (14, +20) cm; slide the sash back to the closed position (y = -10 cm).",
+  "scores": "Dream-1 run: 0.0; demo: 1.0",
+  "media": "M-WRLZ2E"
+}
