@@ -1,10 +1,10 @@
-# Slide a hot air-fryer basket out from under its two retaining hooks, lift it by its handle and set it on the heat-proof mat (air_fryer_basket_unhook_trivet)
+# Slide a hot air-fryer basket out from under its retaining hooks, lift it by the handle and set it on the heat-proof mat
 
 ## Task Overview
 
 The chips are done. Take the basket out of the air fryer and set it on the green mat; let go and keep both fingers at least 3 cm from the basket.
 
-Taking a hot basket out of an air fryer is an everyday kitchen job; its walls and the housing are at frying temperature (the red lamp is lit), so only the black handle may be touched, and the basket must go down on a heat-proof mat. The ability tested is a keyed release (slide the basket 3 cm toward you until its flanges leave the retaining hooks, then lift) done through the handle. Manual source: Instant Vortex Air Fryer User Manual, Section 'Care, Cleaning and Storage - Handling the Fryer Basket': 'Always use the basket handle to remove and carry the basket; surfaces remain hot during and after cooking.' URL: https://www.instanthome.com. Closest on the board: TK-PSHKS8 (p) Set down a hot pot, TK-RSPMXH (a) Release a two-latch lid, TK-YVSVN2 (r) Press the slot latch; new here: hooks decide the removal direction and a touch of any hot surface scores 0.
+Taking a hot basket out of an air fryer is an everyday job for home cooks and for Cooks, Short Order (O*NET 35-2015.00) and Food Preparation Workers (35-2021.00). The housing and basket are at frying temperature (red lamp lit), so only the black handle may be touched, and the basket goes on a heat-proof mat. The one ability: a keyed release (slide the basket 3 cm toward you until its flanges leave two retaining hooks, then lift) done through the handle. Source: the Instant Vortex Mini manual warns to use only the basket handle to lift and carry the basket, https://manuals.plus/m/85ecea6fda5793fb8ff3f918a9e3e8ba5f4450226e875ad8002a9312ad1377c3. Why a robot task: hook geometry fixes the direction and a hot-surface no-touch zone constrains every motion. Closest on the board: TK-PSHKS8 (hot pot down), TK-RSPMXH (two-latch lid); new here: hooks decide the removal direction.
 
 ## Setup & Starting Configuration
 
@@ -20,7 +20,7 @@ Final state plus faults. ON MAT: the basket's floor centre within 10 mm of the m
 
 ## Fidelity
 
-No heat is simulated: hot surfaces are identified by the lit lamp and orange color, enforced by contact scoring. Two hooks over flanges provide a keyed slide-then-lift release with 8 mm clearances. Drawer side walls are omitted for lateral transit, basket is 6 cm deep for arm lift reach, and the handle stands 6.2 cm proud to admit gripper fingers. The drawer plate is fixed. Hot contact is checked from gripper geometry. The simulator scores end state, so demo leaves grippers open.
+No heat is simulated: hot parts are marked by the lit lamp and orange paint and enforced by contact scoring on the gripper geometry. The basket (17 x 17 x 6 cm, 450 g) is at the small end of real baskets (compact units); the drawer's side walls are omitted so the arm can pass, and the handle stands 6.2 cm proud so the 94 mm gripper fits. The hooks are real keyed geometry with 8 mm clearances, not a script. Housing and drawer plate are fixed 25 kg parts.
 
 ## Execution
 
