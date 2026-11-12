@@ -1,0 +1,34 @@
+# Fit lids onto cable tray meeting in middle (cable_tray_lid_fit)
+
+## Task Overview
+
+Close the cable tray with both teal lids.
+
+Datacenter technicians and cable installers enclose high-density fiber runs within protected cable trays (O*NET 49-2022.00, 49-9052.00).
+
+## Setup & Starting Configuration
+
+Dual YAM embodiment at ready on station tabletop. Steel-grey cable tray (120 mm wide in x, 400 mm long in y, 60 mm high, 25 kg, friction 1.2, fixed in place) centred at x=30 cm, y=0 whose two 15 mm thick, 60 mm high side walls act as the rails the lids rest on. Two teal lids (118x196x12 mm as x by y by height, 0.3 kg each, friction 0.6) with a 40x80x10 mm handle on top of each lie on two 120x220x10 mm side pads centred at x=16 cm, y=+22 cm and y=-22 cm. Real build: the tray is bent 3 mm steel sheet bolted to the table (this replaces the 25 kg fixed mass); the lids are 12 mm thick solid PETG slabs, each with a 3D-printed PETG handle (40x80x10 mm) glued on; the side pads are 5 mm PETG plates. Material as modelled: every object is a rigid body with only the size, mass and friction stated here; nothing deforms, and nothing snaps or latches except through contact and the listed slider springs.
+
+## Reset
+
+Return lids to staging pads at x=16 cm. Verify cable tray is fixed at x=30 cm.
+
+## Scoring
+
+Ladder: 0.25 one lid on the rails, 0.50 both lids on the rails, 0.75 lids near the centre (gap <= 6 cm), 1.00 lids meet flush (gap <= 5 mm, height difference <= 3 mm) and motionless for 1.0 s. A lid is on the rails when its centre is within 25 mm of x = 300 mm and within 8 mm of 63 mm above the tabletop, so a lid held above its seat does not count. Gate: tray drift > 5 mm zeroes score. Possible scores: 0.0, 0.25, 0.5, 0.75, 1.0.
+
+## Fidelity
+
+Fixed heavy 25 kg trough fixture with guide rails. Lids are loose rigid bodies with 0.6 friction. Scorer evaluates physical 3D contact, gap width, and flushness.
+
+## Execution
+
+```bash
+bash run.sh settle     # 8 s hold at the ready pose
+bash run.sh demo       # scripted two-arm demo, 1,500 steps
+bash run.sh ablation   # one lid only, scores below 1.0
+bash run.sh dream      # Dream-1 policy, 2,400 steps
+```
+
+Runtime per trial: the scripted demo takes about 540 control steps (27 s at 20 Hz); a full Isaac trial takes 3-4 minutes on an L40S GPU. Object jitter is disabled (`object_jitter=0`), so there are no random seeds.
