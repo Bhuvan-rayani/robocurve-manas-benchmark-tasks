@@ -1,0 +1,20 @@
+{
+  "title": "Lower protective cover over high-voltage terminals",
+  "category": "Safety and alignment",
+  "instruction": "Lower the clear-grey cover over the two live terminals so both are enclosed.",
+  "setup": "Dual YAM embodiment at ready on station tabletop. White terminal block (140x200x30 mm, 25 kg, friction 1.2) with red and blue terminal posts at x=30 cm. Clear-grey cover (120x180x40 mm, 0.3 kg) staged at x=14 cm. Real build: the terminal block is a white PLA base bolted to the table with two red and blue posts; the cover is a 3 mm clear acrylic box open at the bottom, with its 3 mm walls resting on the block when seated. Material as modelled: every object is a rigid body with only the size, mass and friction stated here; nothing deforms, and nothing snaps or latches except through contact and the listed slider springs.",
+  "scoring": "Ladder: 0.25 cover lifted > 3 cm, 0.50 cover over terminals within 3 cm, 0.75 within 1 cm and level, 1.00 seated on block rim (within 8 mm horizontal, 3 mm vertical) and motionless for 1.0 s. Gate: block drift > 5 mm zeroes score. Possible scores: 0.0, 0.25, 0.5, 0.75, 1.0.",
+  "run_limit": "2,400 steps (120 seconds at 20 Hz)",
+  "fidelity": "Fixed heavy 25 kg terminal fixture. Cover is rigid body with 0.8 friction and side handles. Scorer evaluates 3D seating depth and enclosure.",
+  "context": "Industrial electricians and power distribution technicians install insulating dead-front barrier covers across energized terminal lugs to prevent arc flash and touch hazards (NFPA 70E, O*NET 47-2111.00).",
+  "keywords": [
+    "bimanual",
+    "terminal block",
+    "protective cover",
+    "electrical safety",
+    "two-arm carry"
+  ],
+  "reset_notes": "Return cover to staging pad at x=14 cm. Verify terminal block is fixed at x=30 cm.",
+  "scores": "Dream-1 run: 0.0; demo: 1.0",
+  "media": "M-VEKJU5"
+}
