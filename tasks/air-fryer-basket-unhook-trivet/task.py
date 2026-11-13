@@ -1,4 +1,4 @@
-"""Slide a hot air-fryer basket out from under its two retaining hooks by the handle, lift it and set it on the heat-proof mat."""
+"""Air fryer basket release button task: release and remove a hot air fryer basket onto a heat-proof mat."""
 
 from __future__ import annotations
 
@@ -8,71 +8,115 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
 from geometry import (
-    BASKET_FLANGES,
-    BASKET_FLOOR,
+    BASKET_BODY_BOXES,
     BASKET_FRICTION,
-    BASKET_HANDLE_BAR,
-    BASKET_HANDLE_POSTS,
-    BASKET_MASS_KG,
-    BASKET_NAME,
-    BASKET_START,
-    BASKET_WALLS,
+    BASKET_HANDLE_BOXES,
+    BASKET_MASS,
+    BASKET_START_POS,
+    BUTTON_AT,
+    BUTTON_BOXES,
+    BUTTON_DAMPING_NS_M,
+    BUTTON_MASS,
+    BUTTON_RATE_N_M,
+    BUTTON_TRAVEL_M,
     COLOR_BASKET,
+    COLOR_BUTTON,
+    COLOR_DRAWER,
     COLOR_HANDLE,
     COLOR_HOUSING,
-    COLOR_LAMP,
     COLOR_MAT,
-    COLOR_PLATE,
-    HOOKS,
-    HOUSING_CENTRE_XY,
-    HOUSING_NAME,
-    HOUSING_SIZE,
-    LAMP_FRONT,
-    LAMP_TOP,
-    MAT_CENTRE_XY,
-    MAT_NAME,
-    MAT_SIZE,
-    PLATE_BASE,
-    SUCCESS_HOLD_TIME_S,
+    DRAWER_AT,
+    DRAWER_BOXES,
+    DRAWER_DAMPING_NS_M,
+    DRAWER_MASS,
+    DRAWER_RATE_N_M,
+    DRAWER_TRAVEL_M,
+    HOUSING_BOXES,
+    STAND_BOX,
+    COLOR_STAND,
+    HOUSING_FRICTION,
+    HOUSING_POS,
+    MAT_BOXES,
+    MAT_CENTRE,
     TABLE_TOP,
 )
-import tracekit  # noqa: F401
-from parts import part
-from yam_arena.task_file import Box
 import demo_plan
+from mechkit import Joint, Mech, box
 import scoring
 
 SCENE = "station"
 TOP = TABLE_TOP
-SUCCESS_HOLD_S = SUCCESS_HOLD_TIME_S
+SUCCESS_HOLD_S = 1.0
 SCORE_OVER = "end"
 
+# 1. Housing (fixed 25 kg stand-in) carrying the drawer on a prismatic slide
+housing_shapes = [box(c, s, COLOR_HOUSING) for c, s, _ in HOUSING_BOXES] + [box(STAND_BOX[0], STAND_BOX[1], COLOR_STAND)]
+drawer_shapes = [box(c, s, COLOR_DRAWER) for c, s, _ in DRAWER_BOXES]
 
-def _fixed(name, centre, size, colour):
-    return Box(name=name, pos=(centre[0], centre[1], TOP + centre[2]), size=size, color=colour, mass=None)
-
-
-HOUSING = _fixed(HOUSING_NAME, (HOUSING_CENTRE_XY[0], HOUSING_CENTRE_XY[1], HOUSING_SIZE[2] / 2), HOUSING_SIZE, COLOR_HOUSING)
-LAMPS = [_fixed(n, c, s, COLOR_LAMP) for n, c, s in (LAMP_FRONT, LAMP_TOP)]
-PLATE = _fixed(PLATE_BASE[0], PLATE_BASE[1], PLATE_BASE[2], COLOR_PLATE)
-HOOK_BOXES = [_fixed(n, c, s, COLOR_PLATE) for n, c, s in HOOKS]
-MAT = _fixed(MAT_NAME, (MAT_CENTRE_XY[0], MAT_CENTRE_XY[1], MAT_SIZE[2] / 2), MAT_SIZE, COLOR_MAT)
-
-BASKET = part(
-    BASKET_NAME,
-    (BASKET_START[0], BASKET_START[1], TOP + BASKET_START[2]),
-    boxes=[(BASKET_FLOOR[0], BASKET_FLOOR[1], COLOR_BASKET)]
-    + [(c, s, COLOR_BASKET) for c, s in BASKET_WALLS]
-    + [(c, s, COLOR_BASKET) for c, s in BASKET_FLANGES]
-    + [(c, s, COLOR_HANDLE) for c, s in BASKET_HANDLE_POSTS]
-    + [(BASKET_HANDLE_BAR[0], BASKET_HANDLE_BAR[1], COLOR_HANDLE)],
-    mass=BASKET_MASS_KG,
-    friction=BASKET_FRICTION,
+drawer_joint = Joint(
+    "drawer",
+    "slide",
+    axis="x",
+    at=DRAWER_AT,
+    low=0.0,
+    high=DRAWER_TRAVEL_M,
+    spring=DRAWER_RATE_N_M,
+    damping=DRAWER_DAMPING_NS_M,
+    mass=DRAWER_MASS,
+    shapes=drawer_shapes,
 )
 
-OBJECTS = [HOUSING, *LAMPS, PLATE, *HOOK_BOXES, MAT, BASKET]
+HOUSING = Mech(
+    "af2_housing",
+    pos=HOUSING_POS,
+    mass=None,
+    friction=HOUSING_FRICTION,
+    shapes=housing_shapes,
+    joints=[drawer_joint],
+)
 
-success = scoring.success
+# 2. Basket (loose 350 g body) carrying the release button on a prismatic slide
+basket_shapes = (
+    [box(c, s, COLOR_BASKET) for c, s, _ in BASKET_BODY_BOXES]
+    + [box(c, s, COLOR_HANDLE) for c, s, _ in BASKET_HANDLE_BOXES]
+)
+button_shapes = [box(c, s, COLOR_BUTTON) for c, s, _ in BUTTON_BOXES]
+
+button_joint = Joint(
+    "button",
+    "slide",
+    axis="x",
+    at=BUTTON_AT,
+    low=0.0,
+    high=BUTTON_TRAVEL_M,
+    spring=BUTTON_RATE_N_M,
+    damping=BUTTON_DAMPING_NS_M,
+    mass=BUTTON_MASS,
+    shapes=button_shapes,
+)
+
+BASKET = Mech(
+    "af2_basket",
+    pos=BASKET_START_POS,
+    mass=BASKET_MASS,
+    friction=BASKET_FRICTION,
+    shapes=basket_shapes,
+    joints=[button_joint],
+)
+
+# 3. Heat-proof mat (fixed 25 kg stand-in)
+mat_shapes = [box(c, s, COLOR_MAT) for c, s, _ in MAT_BOXES]
+MAT = Mech(
+    "af2_mat",
+    pos=MAT_CENTRE,
+    mass=None,
+    friction=1.2,
+    shapes=mat_shapes,
+)
+
+OBJECTS = [HOUSING, BASKET, MAT]
+
 score = scoring.score
+success = scoring.success
 distance = scoring.distance
 demo = demo_plan.plans

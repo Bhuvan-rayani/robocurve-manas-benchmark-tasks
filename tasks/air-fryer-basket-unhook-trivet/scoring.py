@@ -1,153 +1,282 @@
-"""Scorer wrappers for air_fryer_basket_unhook_trivet."""
+"""Scorer wrappers and trace logging for air_fryer_basket_release_button_v2."""
 
 from __future__ import annotations
 
 import json
+import math
 import os
-from typing import Any, Mapping
+from typing import Any
 
 import numpy as np
 
-import parts
+from display import DISPLAY
 from geometry import (
-    BASKET_ALL_BOXES,
-    BASKET_HOT_BOXES,
-    BASKET_NAME,
-    BASKET_START,
-    FINGERS_OPEN_FRACTION,
-    HOOKS,
-    HOT_MARGIN_M,
-    HOUSING_CENTRE_XY,
-    HOUSING_SIZE,
-    PAD_BELOW_TCP_M,
-    PLATE_BASE,
-    RELEASE_MIN_DIST_M,
-    STILL_SPEED_M_S,
+    BASKET_CLEARED_DRAWER_Z,
+    BASKET_LIFT_MIN_M,
+    BUTTON_CLEARANCE_DISPLACEMENT_M,
+    MAT_CENTRE,
+    STILL_WINDOW_STEPS,
     TABLE_TOP,
     TCP_BELOW_LINK_M,
-    UNHOOK_ORIGIN_X_M,
 )
-from logic import evaluate_state, rotation_from_quat
+from logic import (
+    catches_hold_basket,
+    evaluate_state,
+    hot_contact,
+    on_mat,
+    released,
+    still,
+)
+from mechkit import on_reset
 
-# Facts the end state cannot show; reset at every reset. A fault is permanent for the run.
-_RUN = {"fault": False, "min_x": 9.0, "max_free_lift": 0.0}
-
-_EYE = np.eye(3)
-# Fixed hot surfaces in the world frame: (centre, half size). The housing, the drawer plate and the hooks.
-_FIXED_HOT = [
-    (np.array([HOUSING_CENTRE_XY[0], HOUSING_CENTRE_XY[1], TABLE_TOP + HOUSING_SIZE[2] / 2]), np.array(HOUSING_SIZE) / 2),
-    (np.array([PLATE_BASE[1][0], PLATE_BASE[1][1], TABLE_TOP + PLATE_BASE[1][2]]), np.array(PLATE_BASE[2]) / 2),
-] + [(np.array([c[0], c[1], TABLE_TOP + c[2]]), np.array(s) / 2) for _, c, s in HOOKS]
-
-
-def _hand_tcps(environment) -> dict[str, np.ndarray]:
-    scene = environment.unwrapped.scene
-    origin = parts._to_numpy(scene.env_origins[0])
-    out = {}
-    for arm in ("left", "right"):
-        robot = scene[f"{arm}_robot"]
-        names = list(robot.body_names)
-        pos = parts._to_numpy(robot.data.body_pos_w)[0]
-        idx = names.index("gripper") if "gripper" in names else len(names) - 1
-        out[arm] = np.asarray(pos[idx] - origin, dtype=float) - np.array([0.0, 0.0, TCP_BELOW_LINK_M])
-    return out
+# Latched run state across control steps
+_RUN = {
+    "hot_contact_ever": False,
+    "cleared_drawer_ever": False,
+    "unhook_lift_ever": False,
+    "basket_start_z": None,
+    "hist": [],
+    "step": 0,
+}
 
 
-def _state(environment, name):
-    return parts._read_part_state(environment, parts._PARTS[name])
+def _reset_run() -> None:
+    _RUN["hot_contact_ever"] = False
+    _RUN["cleared_drawer_ever"] = False
+    _RUN["unhook_lift_ever"] = False
+    _RUN["basket_start_z"] = None
+    _RUN["hist"] = []
+    _RUN["step"] = 0
 
 
-def _box_distance(point: np.ndarray, centre_world: np.ndarray, rot: np.ndarray, half: np.ndarray) -> float:
-    local = (point - centre_world) @ rot
-    d = np.maximum(np.abs(local) - half, 0.0)
-    return float(np.linalg.norm(d))
+
+def _org(st):
+    """The Mech's body origin (MechState.pos is the bounding-box centre, which moves with the sliding parts)."""
+    o = getattr(st, "origin", None)
+    return st.pos if o is None or not np.any(np.asarray(o, dtype=float)) else o  # unset (zero) origin: fall back to pos
+
+_TILT = {"left": None, "right": None}  # hand tilt from vertical (deg), logged with the pads
+_ENV = [None]  # the simulator environment, captured at reset (score() is called without it)
 
 
-def _touches_hot(tcp: np.ndarray, basket_state) -> bool:
-    """A pad's bottom point (13 mm below the gripper centre) within the margin of a hot surface."""
-    p = tcp - np.array([0.0, 0.0, PAD_BELOW_TCP_M])
-    for centre, half in _FIXED_HOT:
-        if _box_distance(p, centre, _EYE, half) < HOT_MARGIN_M:
-            return True
-    rot = rotation_from_quat(basket_state.quat_xyzw)
-    origin = np.asarray(basket_state.pos, dtype=float)
-    for c, s in BASKET_HOT_BOXES:
-        if _box_distance(p, origin + rot @ np.asarray(c, dtype=float), rot, np.asarray(s, dtype=float) / 2) < HOT_MARGIN_M:
-            return True
-    return False
+@on_reset
+def _on_reset_hook(environment) -> None:
+    _ENV[0] = environment
+    _reset_run()
+    DISPLAY.reset(environment)
 
 
-def _on_reset(environment) -> None:
-    _RUN.update(fault=False, min_x=9.0, max_free_lift=0.0)
+def _to_numpy(val: Any) -> np.ndarray:
+    if hasattr(val, "detach"):
+        val = val.detach()
+    if hasattr(val, "cpu"):
+        val = val.cpu()
+    if hasattr(val, "numpy"):
+        val = val.numpy()
+    return np.asarray(val, dtype=np.float64)
 
 
-def _on_step(environment) -> None:
+def _hand_data(environment) -> tuple[list[np.ndarray], list[np.ndarray]]:
+    """Read TCPs and fingertip pad positions (tip_left, tip_right) from Isaac Lab articulation."""
+    if environment is None:
+        return [], []
     try:
-        st = _state(environment, BASKET_NAME)
-        pos = np.asarray(st.pos, dtype=float)
-        _RUN["min_x"] = min(_RUN["min_x"], float(pos[0]))
-        if pos[0] < UNHOOK_ORIGIN_X_M:
-            _RUN["max_free_lift"] = max(_RUN["max_free_lift"], float(pos[2]) - (TABLE_TOP + BASKET_START[2]))
-        for tcp in _hand_tcps(environment).values():
-            if _touches_hot(tcp, st):
-                _RUN["fault"] = True
-    except Exception:  # never break an episode for bookkeeping
+        scene = environment.unwrapped.scene
+        origin = _to_numpy(scene.env_origins[0])
+        tcps = []
+        pads = []
+        for arm in ("left", "right"):
+            if False:  # InteractiveScene does not support "in"
+                continue
+            robot = scene[f"{arm}_robot"]
+            names = list(robot.body_names)
+            body_pos = _to_numpy(robot.data.body_pos_w)[0]
+            # Gripper centre TCP
+            idx = names.index("gripper") if "gripper" in names else len(names) - 1
+            tcp = np.asarray(body_pos[idx] - origin, dtype=float) - np.array([0.0, 0.0, TCP_BELOW_LINK_M])
+            tcps.append(tcp)
+            # Fingertip pad boxes (tip_left and tip_right)
+            for tip in ("tip_left", "tip_right"):
+                if tip in names:
+                    tip_idx = names.index(tip)
+                    pad_pos = np.asarray(body_pos[tip_idx] - origin, dtype=float)
+                    pads.append(pad_pos)
+                else:
+                    pads.append(tcp)
+        return tcps, pads
+    except Exception:
+        return [], []
+
+
+def advance(
+    basket_pos: Sequence[float],
+    basket_quat: Sequence[float],
+    button_disp: float,
+    tcps: Sequence[Sequence[float]],
+    pads: Sequence[Sequence[float]],
+    drawer_slide: float = 0.0,
+) -> None:
+    """Update latched facts from a single step."""
+    _RUN["step"] += 1
+    bz = float(basket_pos[2])
+    if _RUN["basket_start_z"] is None:
+        _RUN["basket_start_z"] = bz
+
+    # Check hot contact with both fingertip bodies against every hot box
+    if pads and hot_contact(pads, basket_pos, basket_quat, drawer_slide):
+        _RUN["hot_contact_ever"] = True
+
+    # Physical catches check: if catches are hooked and basket is lifted without button pressed,
+    # the lugs hit the ledges
+    if catches_hold_basket(button_disp) and bz > _RUN["basket_start_z"] + 0.015:
+        # Catches hold the basket: lifting without pressing button is blocked
         pass
 
+    # Cleared drawer
+    if bz >= BASKET_CLEARED_DRAWER_Z:
+        _RUN["cleared_drawer_ever"] = True
 
-parts.on_reset(_on_reset)
-parts.on_step(_on_step)
+    # Unhook lift: button pressed >= 6 mm and lifted >= 20 mm
+    if button_disp >= BUTTON_CLEARANCE_DISPLACEMENT_M and bz >= _RUN["basket_start_z"] + BASKET_LIFT_MIN_M:
+        _RUN["unhook_lift_ever"] = True
 
-
-def _released(basket_state) -> bool:
-    environment = parts.env()
-    if environment is None:
-        return False
-    try:
-        for arm in ("left", "right"):
-            if not parts.gripper_open(environment, arm, FINGERS_OPEN_FRACTION):
-                return False
-        tcps = _hand_tcps(environment)
-        rot = rotation_from_quat(basket_state.quat_xyzw)
-        origin = np.asarray(basket_state.pos, dtype=float)
-        for tcp in tcps.values():
-            for c, s in BASKET_ALL_BOXES:
-                if _box_distance(tcp, origin + rot @ np.asarray(c, dtype=float), rot, np.asarray(s, dtype=float) / 2) < RELEASE_MIN_DIST_M:
-                    return False
-        return True
-    except Exception:
-        return False
+    # History for stillness check
+    _RUN["hist"].append(list(map(float, basket_pos)))
+    if len(_RUN["hist"]) > STILL_WINDOW_STEPS * 2:
+        _RUN["hist"] = _RUN["hist"][-STILL_WINDOW_STEPS:]
 
 
 def _trace(record: dict) -> None:
     path = os.environ.get("TASK_TRACE")
-    if path:
-        with open(path, "a", encoding="utf-8") as fh:
-            fh.write(json.dumps(record) + "\n")
+    if not path:
+        return
+    # Convert any numpy types to plain python floats/ints/bools
+    clean = {}
+    for k, v in record.items():
+        if isinstance(v, (np.floating, float)):
+            clean[k] = round(float(v), 5)
+        elif isinstance(v, (np.integer, int)):
+            clean[k] = int(v)
+        elif isinstance(v, (np.bool_, bool)):
+            clean[k] = bool(v)
+        elif isinstance(v, (list, tuple)):
+            clean[k] = [round(float(x), 5) if isinstance(x, (float, np.floating)) else x for x in v]
+        else:
+            clean[k] = v
+    with open(path, "a", encoding="utf-8") as fh:
+        fh.write(json.dumps(clean) + "\n")
 
 
-def score(objects: Mapping[str, Any]) -> float:
-    basket = objects.get(BASKET_NAME)
-    if basket is None:
+
+def _hand_data2(environment):
+    """Both grippers' tool point (TCP) and BOTH fingertip pad centres.
+
+    TCP = gripper body position + its rotation applied to the 0.134 m tool offset (the yam_arena TCP_OFFSET, as in the
+    accepted tasks), so a tilted hand is placed correctly. Pads: on the gripper x axis (the closing axis) at the measured
+    finger opening (joint7/joint8) plus 6 mm, centred at the TCP and 7 mm lower (lower face at the fingertip): four per hand.
+    """
+    if environment is None:
+        return [], []
+    try:
+        scene = environment.unwrapped.scene
+        origin = _to_numpy(scene.env_origins[0])
+        tcps, pads = [], []
+        for arm in ("left", "right"):
+            robot = scene[arm + "_robot"]
+            names = list(robot.body_names)
+            bp = _to_numpy(robot.data.body_pos_w)[0]
+            idx = names.index("gripper") if "gripper" in names else len(names) - 1
+            x, y, z, w = (float(v) for v in _to_numpy(robot.data.body_quat_w)[0][idx])  # (x, y, z, w)
+            n = math.sqrt(x * x + y * y + z * z + w * w) or 1.0
+            x, y, z, w = x / n, y / n, z / n, w / n
+            rot = np.array([[1 - 2 * (y * y + z * z), 2 * (x * y - w * z), 2 * (x * z + w * y)],
+                            [2 * (x * y + w * z), 1 - 2 * (x * x + z * z), 2 * (y * z - w * x)],
+                            [2 * (x * z - w * y), 2 * (y * z + w * x), 1 - 2 * (x * x + y * y)]])
+            tcp = np.asarray(bp[idx] - origin, dtype=float) + rot @ np.array([0.0, 0.0, TCP_BELOW_LINK_M])
+            tcps.append(tcp)
+            q = [0.02, 0.02]
+            try:
+                jn = list(robot.joint_names)
+                jp = _to_numpy(robot.data.joint_pos)[0]
+                q = [abs(float(jp[jn.index(j)])) if j in jn else 0.02 for j in ("joint7", "joint8")]
+            except Exception:
+                pass
+            half_gap = max(q)
+            # As in the accepted tasks: the fingers close along the gripper's own x axis. Two 12 mm pad boxes per finger:
+            # one centred at the TCP, and one whose lower face is the fingertip (13 mm past the TCP, so centred 7 mm past it).
+            for along in (0.0, 0.007):
+                centre = tcp + rot @ np.array([0.0, 0.0, along])
+                for side in (1.0, -1.0):
+                    pads.append(centre + rot[:, 0] * side * (half_gap + 0.006))
+            _TILT[arm] = round(math.degrees(math.acos(max(-1.0, min(1.0, -float(rot[2, 2]))))), 1)
+        return tcps, pads
+    except Exception:
+        return [], []
+
+
+def score(objects: dict[str, Any], environment: Any = None) -> float:
+    """Score the task state."""
+    basket_st = objects.get("af2_basket")
+    housing_st = objects.get("af2_housing")
+
+    if basket_st is None:
         return 0.0
-    pos = tuple(float(v) for v in basket.pos)
-    still = bool(basket.resting(STILL_SPEED_M_S))
-    s, ok, reason = evaluate_state(
-        pos,
-        tuple(float(v) for v in basket.quat_xyzw),
-        float(_RUN["min_x"]),
-        float(_RUN["max_free_lift"]),
-        bool(_RUN["fault"]),
-        _released(basket),
-        still,
+
+    b_pos = list(_org(basket_st))
+    b_quat = list(basket_st.quat_xyzw)
+    button_disp = float(basket_st.joints.get("button", 0.0)) if hasattr(basket_st, "joints") else 0.0
+
+    drawer_slide = 0.0
+    if housing_st and hasattr(housing_st, "joints"):
+        drawer_slide = float(housing_st.joints.get("drawer", 0.0))
+
+    tcps, pads = _hand_data2(environment if environment is not None else _ENV[0])
+    try:
+        _tp = os.environ.get("TASK_TRACE")
+        if _tp and pads:
+            with open(_tp + ".pads.jsonl", "a", encoding="utf-8") as _fh:
+                _fh.write(json.dumps({"p": [[round(float(v), 3) for v in q] for q in pads], "t": [[round(float(v), 3) for v in q] for q in tcps], "tilt": dict(_TILT)}) + "\n")
+    except Exception:
+        pass
+    advance(b_pos, b_quat, button_disp, tcps, pads, drawer_slide)
+
+    rel = released(tcps, b_pos, b_quat) if tcps else True
+    stl = still(_RUN["hist"])
+
+    s, reason = evaluate_state(
+        b_pos,
+        b_quat,
+        button_disp,
+        _RUN["hot_contact_ever"],
+        _RUN["cleared_drawer_ever"],
+        _RUN["unhook_lift_ever"],
+        rel,
+        stl,
     )
-    _trace({"score": s, "reason": reason, "basket": [round(v, 4) for v in pos], "fault": _RUN["fault"], "min_x": round(_RUN["min_x"], 4)})
+
+    _trace({
+        "step": int(_RUN["step"]),
+        "score": float(s),
+        "reason": reason,
+        "basket_z": round(float(b_pos[2]), 4), "basket": [round(float(v), 4) for v in b_pos],
+        "button_disp": round(float(button_disp), 4), "basket_tilt": round(float(__import__("logic").tilt_deg(b_quat)), 1),
+        "hot_contact": bool(_RUN["hot_contact_ever"]),
+        "on_mat": bool(on_mat(b_pos, b_quat)),
+        "released": bool(rel),
+        "still": bool(stl),
+    })
+
     return s
 
 
-def success(objects: Mapping[str, Any]) -> bool:
-    return score(objects) >= 1.0
+def success(objects: dict[str, Any], environment: Any = None) -> bool:
+    return score(objects, environment) >= 1.0
 
 
-def distance(objects: Mapping[str, Any]) -> float:
-    return max(0.0, 1.0 - score(objects)) * 0.10
+def distance(objects: dict[str, Any]) -> float:
+    basket_st = objects.get("af2_basket")
+    if basket_st is None:
+        return 1.0
+    dx = float(_org(basket_st)[0]) - MAT_CENTRE[0]
+    dy = float(_org(basket_st)[1]) - MAT_CENTRE[1]
+    return float(math.hypot(dx, dy))
